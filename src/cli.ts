@@ -4,7 +4,8 @@ import Vibrant from "node-vibrant";
 import fetch from "node-fetch";
 import Web3 from "web3";
 import fs from "fs";
-import { TokenData } from ".";
+import { AllTokens } from ".";
+import { Palette } from "node-vibrant/lib/color";
 
 interface ZeroExTokenResponse {
   records: {
@@ -23,23 +24,21 @@ const fetchDataAndWriteJSON = async () => {
 
   const tokenData = _zeroExResponse as ZeroExTokenResponse;
 
-  let tokens: TokenData = {};
+  let tokens: AllTokens = {};
 
   for (const token of tokenData.records) {
     const logoURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${Web3.utils.toChecksumAddress(
       token.address
     )}/logo.png`;
 
-    let color;
+    let color: Palette;
     try {
-      color = await Vibrant.from(logoURL)
-        .getPalette()
-        .then((palette) => palette.Vibrant.getHex());
+      color = await Vibrant.from(logoURL).getPalette();
     } catch (error) {
       tokens[token.symbol] = {
-        address: token.address,
-        decimals: token.decimals,
+        ...token,
         color: "#FFFFFF",
+        overlayTextColor: "#000",
         logoURL:
           "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
       };
@@ -48,9 +47,9 @@ const fetchDataAndWriteJSON = async () => {
     }
 
     tokens[token.symbol] = {
-      address: token.address,
-      decimals: token.decimals,
-      color: color,
+      ...token,
+      color: color.Vibrant.getHex(),
+      overlayTextColor: color.Vibrant.getTitleTextColor() as any,
       logoURL,
     };
   }
