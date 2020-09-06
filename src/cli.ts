@@ -27,7 +27,7 @@ const fetchDataAndWriteJSON = async () => {
 
   let tokens: AllTokens = {};
 
-  for (const token of tokenData.records) {
+  for (let token of tokenData.records) {
     const logoURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${Web3.utils.toChecksumAddress(
       token.address
     )}/logo.png`;
