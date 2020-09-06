@@ -3,6 +3,7 @@ export interface AllTokens {
 }
 
 export interface Token {
+  name: string;
   address: string;
   decimals: number;
   symbol: string;

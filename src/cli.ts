@@ -9,6 +9,7 @@ import { Palette } from "node-vibrant/lib/color";
 
 interface ZeroExTokenResponse {
   records: {
+    name: string;
     symbol: string;
     address: string;
     decimals: number;
@@ -44,6 +45,22 @@ const fetchDataAndWriteJSON = async () => {
       };
 
       continue;
+    }
+
+    // Fix incorrect symbols by 0x.
+    token.symbol = token.symbol.replace("SUSD", "sUSD").replace("bUSD", "BUSD");
+
+    // If the token is WETH we also add ETH with the same data but with a different symbol.
+    if (token.symbol === "WETH") {
+      tokens["ETH"] = {
+        ...token,
+        name: "Ethereum Network Token",
+        address: "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS",
+        symbol: "ETH",
+        color: color.Vibrant.getHex(),
+        overlayTextColor: color.Vibrant.getTitleTextColor() as any,
+        logoURL,
+      };
     }
 
     tokens[token.symbol] = {
